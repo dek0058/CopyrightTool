@@ -30,9 +30,8 @@ CopyrightTool은 YAML 형식의 설정 파일을 사용하며, `--run` 인수로
 
 ```yaml
 copyright: Person
-rootPath: ''
-excludePaths:
-- ''
+rootPath: {Path}
+excludePaths: []
 fileExtensions:
 - .cs
 - .cpp
