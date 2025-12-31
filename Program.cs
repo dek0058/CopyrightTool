@@ -63,7 +63,18 @@ namespace CopyrightTool
 				return;
 			}
 
-			IEnumerable<string> paths;
+            string configFilePath = Path.GetFullPath(args[1]);
+            string? configFileDirectory = Path.GetDirectoryName(configFilePath);
+            if (string.IsNullOrEmpty(configFileDirectory))
+            {
+                Console.WriteLine("Config file directory could not be determined.");
+                return;
+            }
+            string absoluteRootPath = Path.GetFullPath(Path.Combine(configFileDirectory, cfg.Value.rootPath));
+            Console.WriteLine($"Config file directory: {configFileDirectory}");
+            Console.WriteLine($"Resolved root path to search: {absoluteRootPath}");
+
+            IEnumerable<string> paths;
 
 			try
 			{
@@ -74,8 +85,8 @@ namespace CopyrightTool
 			}
 			catch
 			{
-				Console.WriteLine("Root path invalid.");
-				return;
+                Console.WriteLine($"Root path invalid or not found: {absoluteRootPath}");
+                return;
 			}
 
 			if (paths == null)
@@ -180,10 +191,12 @@ namespace CopyrightTool
 
 		struct ProgramConfig
 		{
-			public string copyright;
-			public string rootPath;
-			public string[] excludePaths;
-			public string[] fileExtensions;
+			public string copyright = "";
+			public string rootPath = "";
+			public string[] excludePaths = [];
+			public string[] fileExtensions = [];
+
+            public ProgramConfig() { }
 
 			public readonly bool IsValid()
 			{
@@ -199,13 +212,7 @@ namespace CopyrightTool
                     return false;
 				}
 
-				if (excludePaths == null)
-				{
-					Console.WriteLine("Exclude paths is null.");
-                    return false;
-				}
-
-				if (fileExtensions == null || fileExtensions.Length == 0)
+				if (fileExtensions.Length == 0)
 				{
 					Console.WriteLine("File extensions is null or empty.");
                     return false;
